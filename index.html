@@ -92,7 +92,7 @@
         <div id="body">
             <textarea
                 id="inputText"
-                placeholder="Enter text to encrypt"
+                placeholder="Enter text to encrypt / decrypt (leave empty for decryption)"
             ></textarea>
             <input
                 type="text"
@@ -114,7 +114,6 @@
             const password = document.getElementById("inputPassword");
             const output = document.getElementById("data");
             const error = document.getElementById("error");
-            let lastCiphertext = "";
             let timeOut1, timeOut2;
             const helpMessage = `
         AES-256-GCM encryption using Web Crypto API.
@@ -143,6 +142,18 @@
                 alert(helpMessage);
             });
 
+            inputText.addEventListener("focus", (event) => {
+                inputText.select();
+            });
+
+            output.addEventListener("click", () => {
+                const range = document.createRange();
+                const selection = window.getSelection();
+                range.selectNodeContents(output);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            });
+
             encryptButton.addEventListener("click", async () => {
                 const text = inputText.value;
                 const pass = password.value;
@@ -153,10 +164,9 @@
                 }
 
                 try {
-                    lastCiphertext = await encryptToBase64(text, pass);
                     inputText.value = "";
                     password.value = "";
-                    output.textContent = lastCiphertext;
+                    output.textContent = await encryptToBase64(text, pass);
                     output.parentElement.style.display = "block";
                 } catch (error) {
                     console.error("Encryption error:", error);
@@ -168,7 +178,9 @@
 
             decryptButton.addEventListener("click", async () => {
                 const pass = password.value;
-                const ciphertext = lastCiphertext || output.textContent;
+                const ciphertext = (
+                    inputText.value || output.textContent
+                ).trim();
 
                 if (!ciphertext) {
                     displayError(
@@ -186,7 +198,9 @@
                         ciphertext,
                         pass,
                     );
+                    password.value = "";
                     output.textContent = decryptedText;
+                    output.parentElement.style.display = "block";
                 } catch (error) {
                     console.error("Decryption error:", error);
                     displayError("Wrong password or corrupted data.");
@@ -233,7 +247,7 @@
                     keyMaterial,
                     { name: "AES-GCM", length: 256 },
                     false,
-                    ["encrypt"],
+                    ["encrypt", "decrypt"],
                 );
 
                 const ciphertext = new Uint8Array(
@@ -252,7 +266,11 @@
                 combined.set(iv, salt.length);
                 combined.set(ciphertext, salt.length + iv.length);
 
-                return btoa(String.fromCharCode(...combined));
+                return btoa(
+                    Array.from(combined)
+                        .map((b) => String.fromCharCode(b))
+                        .join(""),
+                );
             }
 
             async function decryptFromBase64(base64, password) {
@@ -284,7 +302,7 @@
                     keyMaterial,
                     { name: "AES-GCM", length: 256 },
                     false,
-                    ["decrypt"],
+                    ["encrypt", "decrypt"],
                 );
 
                 const decrypted = await crypto.subtle.decrypt(

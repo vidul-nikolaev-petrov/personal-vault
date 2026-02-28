@@ -1,6 +1,6 @@
 
-<!-- saved from url=(0049)file:///Users/vidul/code/personal-vault/demo.html -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- saved from url=(0050)file:///Users/vidul/code/personal-vault/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
         <title>PVault</title>
         <style>
             body {
@@ -87,17 +87,17 @@
     </head>
     <body>
         <p id="title">
-            Personal Vault (AES-256-GCM)<span id="help">ⓘ</span>
+            Personal Vault (AES-256-GCM) Demo<span id="help">&#9432;</span>
         </p>
 
         <div id="body">
-            <textarea id="inputText" placeholder="Enter text to encrypt"></textarea>
+            <textarea id="inputText" placeholder="Enter text to encrypt / decrypt (leave empty for decryption)"></textarea>
             <input type="text" id="inputPassword" placeholder="Demo password: 1234">
             <button id="encryptButton">Encrypt</button>
             <button id="decryptButton">Decrypt</button>
-            <div id="output" style="display: block;"><div id="data">GqxKAY4Gl55bFMobPJrtLL0WKEePr1ffsSfTPefAfpR1AA1L7hLByU9GTsTsFYnvI42HqKIB414s029O0EU/65MBpIqnNWR+ofR+/A4uAGyPFmeb17wn2YguhtbjfW7YpOBDSRpTFZIpPgY4dKWzFv4RkLY0SxIwXU9Suu/arCMV9Nm5GWnZOg/Xqy9SukV9QEwxVFiLiAtTJrxfI+bDPk1VDyuKffJPN9w7y/s3UXSRH25W6gcAS0cCuviFLlcFaRBsVlphTWnBk4EjO0AL19ook6N92J0t1U4v2R07wpW/7SnRcEWJnaWjfOnAFXgycEYg0M34KgA2aME7d3qHhqwB3JhasfoyqDY2JD1Ixbg3b1WdCluwth85AvynepHhToPelvNQmKxYmU1VSS4TYz+kQ1jGwF8FknVBUJ9vDVWs2crXRx3R3t1UVN30LmqCGcrqjuBPlfQTtt/DtzGcayZFbmvAvTT+xoxC9Qc0L8s4L1ZwysxSHxDAUB8RS5TzNEkNggkw8d60TWQx1ZOh73NsAGMPAICVKOSuYoga0HUpa5HDw1hNRWEwrQAbx+d0EpRezW/h52bvJqhjAvoKIkVTVJ9p6YLCKOZtqEHww58Ab2+a5c7Ae8c59xMRdKQ1UkS2SpsaTp+/Aeznr1rT7/ZHcKh7EhouI0V1rt4VfF4bdC1xPkOKF3p3FWxWdIzY2FBcAtkVZ77swSmli/ZkiDuafPlxGRc4An4++aLNFEkYUlTYE4YJFNoLlBa+MFdvUPvtifWj3ybMclMPSOzCyVsaMKiRjoMrTBop3+FO+riEINSqrZkZnL4c1phwFkeoO3LdkZB/gsQ72YSfd70iu55f2SQnBHSAHPWr7DJe5Gblx8c00LFtJahKhWxkSSM0FuHBWkb5mpeJ/AupIlyrph3wDATDzG8PXn7ywOqxnQIqozogBCXdcYp5UxeVTrLlXpRWUOY0Tip4yRiwwpLdU2GOZ4gY/2/obpJh0LJkHqj4Hm86F2jiCaVKITfe8aRyGVMbkQ==</div></div>
+            <div id="output" style="display: block;"><div id="data">OeDmq7Nb03ffE1xClPKRlFvvgWQH8C3MF2/efvMrHfF6XlWugxcHQxp1uId4YLtWHAXmjp00Pw030rsFm6dZcVf9Mpo6zVCWrM6R+Q8u6VSbEzus7qYSKsYQ4x5MqnT9auTmhyVGhAIHD6JIjEsaDT05GUyEoe40FXFTWBXyKykIBLG0pHkGwd3cjfA5UwaUn7h9/qhrgI5b+AUcbs78gXMKO+BjJoHrntlUg2vS9QMcxBFCqOjJNxf5s8NzIyiulAssoxIqb4sUV/yFXzILYfUP8syHGjLv2GjBJ7kdsrx5v7hCzg==</div></div>
             <br>
-            <div id="error" style="opacity: 1;"></div>
+            <div id="error"></div>
         </div>
 
         <script>
@@ -108,7 +108,6 @@
             const password = document.getElementById("inputPassword");
             const output = document.getElementById("data");
             const error = document.getElementById("error");
-            let lastCiphertext = "";
             let timeOut1, timeOut2;
             const helpMessage = `
         AES-256-GCM encryption using Web Crypto API.
@@ -137,6 +136,18 @@
                 alert(helpMessage);
             });
 
+            inputText.addEventListener("focus", (event) => {
+                inputText.select();
+            });
+
+            output.addEventListener("click", () => {
+                const range = document.createRange();
+                const selection = window.getSelection();
+                range.selectNodeContents(output);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            });
+
             encryptButton.addEventListener("click", async () => {
                 const text = inputText.value;
                 const pass = password.value;
@@ -147,10 +158,9 @@
                 }
 
                 try {
-                    lastCiphertext = await encryptToBase64(text, pass);
                     inputText.value = "";
                     password.value = "";
-                    output.textContent = lastCiphertext;
+                    output.textContent = await encryptToBase64(text, pass);
                     output.parentElement.style.display = "block";
                 } catch (error) {
                     console.error("Encryption error:", error);
@@ -162,7 +172,9 @@
 
             decryptButton.addEventListener("click", async () => {
                 const pass = password.value;
-                const ciphertext = lastCiphertext || output.textContent;
+                const ciphertext = (
+                    inputText.value || output.textContent
+                ).trim();
 
                 if (!ciphertext) {
                     displayError(
@@ -180,7 +192,9 @@
                         ciphertext,
                         pass,
                     );
+                    password.value = "";
                     output.textContent = decryptedText;
+                    output.parentElement.style.display = "block";
                 } catch (error) {
                     console.error("Decryption error:", error);
                     displayError("Wrong password or corrupted data.");
@@ -227,7 +241,7 @@
                     keyMaterial,
                     { name: "AES-GCM", length: 256 },
                     false,
-                    ["encrypt"],
+                    ["encrypt", "decrypt"],
                 );
 
                 const ciphertext = new Uint8Array(
@@ -246,7 +260,11 @@
                 combined.set(iv, salt.length);
                 combined.set(ciphertext, salt.length + iv.length);
 
-                return btoa(String.fromCharCode(...combined));
+                return btoa(
+                    Array.from(combined)
+                        .map((b) => String.fromCharCode(b))
+                        .join(""),
+                );
             }
 
             async function decryptFromBase64(base64, password) {
@@ -278,7 +296,7 @@
                     keyMaterial,
                     { name: "AES-GCM", length: 256 },
                     false,
-                    ["decrypt"],
+                    ["encrypt", "decrypt"],
                 );
 
                 const decrypted = await crypto.subtle.decrypt(
