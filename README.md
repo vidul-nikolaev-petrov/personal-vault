@@ -1,6 +1,6 @@
 # Personal Vault
 
-Try it online: [Personal Vault](https://vidul-nikolaev-petrov.github.io/personal-vault/)
+Try it [online](https://vidul-nikolaev-petrov.github.io/personal-vault/) or check the [demo](https://vidul-nikolaev-petrov.github.io/personal-vault/demo.html).
 
 > Vanilla JavaScript — no dependencies required.
 
