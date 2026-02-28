@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>AES storage</title>
+        <title>PVault</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -19,7 +19,7 @@
             }
             textarea {
                 width: 600px;
-                height: 100px;
+                height: 200px;
                 padding: 10px;
                 margin-bottom: 10px;
                 border: 1px solid #ccc;
@@ -119,9 +119,12 @@
             const helpMessage = `
         AES-256-GCM encryption using Web Crypto API.
             
-            1. Enter text and password
-            2. Click Encrypt to get ciphertext
-            3. Click Decrypt to retrieve original text
+        Encryption steps:
+            1. Enter text and password.
+            2. Click Encrypt to get the ciphertext.
+        Decryption steps:
+            1. Enter password.
+            3. Click Decrypt to retrieve the original text.
                 
         Salt + IV + Ciphertext are combined and Base64 encoded.
         
