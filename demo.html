@@ -1,0 +1,297 @@
+
+<!-- saved from url=(0049)file:///Users/vidul/code/personal-vault/demo.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>PVault</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f5f5f5;
+                color: #616161;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                /* height: 90vh; */
+            }
+            #title {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+            textarea {
+                width: 600px;
+                height: 200px;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                color: #616161;
+                resize: none;
+                font-family: monospace;
+                display: block;
+                outline: none;
+            }
+            input[type="text"] {
+                width: 290px;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                outline: none;
+            }
+            button {
+                width: 150px;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                background-color: #3c5;
+                color: white;
+                cursor: pointer;
+                outline: none;
+            }
+            button:hover {
+                background-color: #2b4;
+            }
+            #output {
+                margin-top: 20px;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                background-color: #e0e0e0;
+                display: none;
+            }
+            #data {
+                display: inline-block;
+                text-align: justify;
+                word-wrap: break-word;
+                width: 555px;
+                margin-left: 10px;
+            }
+            #error {
+                margin-top: 10px;
+                padding: 10px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: opacity 1s ease;
+            }
+            #help {
+                padding: 10px;
+                font-size: 80%;
+            }
+            #help:hover {
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+        <p id="title">
+            Personal Vault (AES-256-GCM)<span id="help">ⓘ</span>
+        </p>
+
+        <div id="body">
+            <textarea id="inputText" placeholder="Enter text to encrypt"></textarea>
+            <input type="text" id="inputPassword" placeholder="Demo password: 1234">
+            <button id="encryptButton">Encrypt</button>
+            <button id="decryptButton">Decrypt</button>
+            <div id="output" style="display: block;"><div id="data">GqxKAY4Gl55bFMobPJrtLL0WKEePr1ffsSfTPefAfpR1AA1L7hLByU9GTsTsFYnvI42HqKIB414s029O0EU/65MBpIqnNWR+ofR+/A4uAGyPFmeb17wn2YguhtbjfW7YpOBDSRpTFZIpPgY4dKWzFv4RkLY0SxIwXU9Suu/arCMV9Nm5GWnZOg/Xqy9SukV9QEwxVFiLiAtTJrxfI+bDPk1VDyuKffJPN9w7y/s3UXSRH25W6gcAS0cCuviFLlcFaRBsVlphTWnBk4EjO0AL19ook6N92J0t1U4v2R07wpW/7SnRcEWJnaWjfOnAFXgycEYg0M34KgA2aME7d3qHhqwB3JhasfoyqDY2JD1Ixbg3b1WdCluwth85AvynepHhToPelvNQmKxYmU1VSS4TYz+kQ1jGwF8FknVBUJ9vDVWs2crXRx3R3t1UVN30LmqCGcrqjuBPlfQTtt/DtzGcayZFbmvAvTT+xoxC9Qc0L8s4L1ZwysxSHxDAUB8RS5TzNEkNggkw8d60TWQx1ZOh73NsAGMPAICVKOSuYoga0HUpa5HDw1hNRWEwrQAbx+d0EpRezW/h52bvJqhjAvoKIkVTVJ9p6YLCKOZtqEHww58Ab2+a5c7Ae8c59xMRdKQ1UkS2SpsaTp+/Aeznr1rT7/ZHcKh7EhouI0V1rt4VfF4bdC1xPkOKF3p3FWxWdIzY2FBcAtkVZ77swSmli/ZkiDuafPlxGRc4An4++aLNFEkYUlTYE4YJFNoLlBa+MFdvUPvtifWj3ybMclMPSOzCyVsaMKiRjoMrTBop3+FO+riEINSqrZkZnL4c1phwFkeoO3LdkZB/gsQ72YSfd70iu55f2SQnBHSAHPWr7DJe5Gblx8c00LFtJahKhWxkSSM0FuHBWkb5mpeJ/AupIlyrph3wDATDzG8PXn7ywOqxnQIqozogBCXdcYp5UxeVTrLlXpRWUOY0Tip4yRiwwpLdU2GOZ4gY/2/obpJh0LJkHqj4Hm86F2jiCaVKITfe8aRyGVMbkQ==</div></div>
+            <br>
+            <div id="error" style="opacity: 1;"></div>
+        </div>
+
+        <script>
+            const help = document.getElementById("help");
+            const encryptButton = document.getElementById("encryptButton");
+            const decryptButton = document.getElementById("decryptButton");
+            const inputText = document.getElementById("inputText");
+            const password = document.getElementById("inputPassword");
+            const output = document.getElementById("data");
+            const error = document.getElementById("error");
+            let lastCiphertext = "";
+            let timeOut1, timeOut2;
+            const helpMessage = `
+        AES-256-GCM encryption using Web Crypto API.
+            
+        Encryption steps:
+            1. Enter text and password.
+            2. Click Encrypt to get the ciphertext.
+        Decryption steps:
+            1. Enter password.
+            3. Click Decrypt to retrieve the original text.
+                
+        Salt + IV + Ciphertext are combined and Base64 encoded.
+        
+        IV stands for Initialization Vector. It is a random value used
+        in cryptographic algorithms to ensure that the same plaintext
+        encrypted multiple times produces different ciphertexts. 
+        The IV is combined with the salt and ciphertext, then Base64
+        encoded for storage or transmission.
+        `;
+
+            window.addEventListener("load", () => {
+                inputText.focus();
+            });
+
+            help.addEventListener("click", () => {
+                alert(helpMessage);
+            });
+
+            encryptButton.addEventListener("click", async () => {
+                const text = inputText.value;
+                const pass = password.value;
+
+                if (!text || !pass) {
+                    displayError("Please enter both text and password.");
+                    return;
+                }
+
+                try {
+                    lastCiphertext = await encryptToBase64(text, pass);
+                    inputText.value = "";
+                    password.value = "";
+                    output.textContent = lastCiphertext;
+                    output.parentElement.style.display = "block";
+                } catch (error) {
+                    console.error("Encryption error:", error);
+                    displayError(
+                        "Encryption failed. Check console for details.",
+                    );
+                }
+            });
+
+            decryptButton.addEventListener("click", async () => {
+                const pass = password.value;
+                const ciphertext = lastCiphertext || output.textContent;
+
+                if (!ciphertext) {
+                    displayError(
+                        "No ciphertext to decrypt. Please encrypt something first.",
+                    );
+                    return;
+                }
+                if (!pass) {
+                    displayError("Please enter a password.");
+                    return;
+                }
+
+                try {
+                    const decryptedText = await decryptFromBase64(
+                        ciphertext,
+                        pass,
+                    );
+                    output.textContent = decryptedText;
+                } catch (error) {
+                    console.error("Decryption error:", error);
+                    displayError("Wrong password or corrupted data.");
+                }
+            });
+
+            function displayError(message) {
+                error.textContent = message;
+
+                clearTimeout(timeOut1);
+                clearTimeout(timeOut2);
+
+                timeOut1 = setTimeout(() => {
+                    error.style.opacity = "0";
+
+                    timeOut2 = setTimeout(() => {
+                        error.textContent = "";
+                        error.style.opacity = "1";
+                    }, 500);
+                }, 5000);
+            }
+
+            async function encryptToBase64(text, password) {
+                const encoder = new TextEncoder();
+
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const iv = crypto.getRandomValues(new Uint8Array(12));
+
+                const keyMaterial = await crypto.subtle.importKey(
+                    "raw",
+                    encoder.encode(password),
+                    { name: "PBKDF2" },
+                    false,
+                    ["deriveKey"],
+                );
+
+                const key = await crypto.subtle.deriveKey(
+                    {
+                        name: "PBKDF2",
+                        salt,
+                        iterations: 300000,
+                        hash: "SHA-256",
+                    },
+                    keyMaterial,
+                    { name: "AES-GCM", length: 256 },
+                    false,
+                    ["encrypt"],
+                );
+
+                const ciphertext = new Uint8Array(
+                    await crypto.subtle.encrypt(
+                        { name: "AES-GCM", iv },
+                        key,
+                        encoder.encode(text),
+                    ),
+                );
+
+                // Обединяваме salt + iv + ciphertext
+                const combined = new Uint8Array(
+                    salt.length + iv.length + ciphertext.length,
+                );
+
+                combined.set(salt, 0);
+                combined.set(iv, salt.length);
+                combined.set(ciphertext, salt.length + iv.length);
+
+                // Base64 encode
+                return btoa(String.fromCharCode(...combined));
+            }
+
+            async function decryptFromBase64(base64, password) {
+                const combined = Uint8Array.from(atob(base64), (c) =>
+                    c.charCodeAt(0),
+                );
+
+                const salt = combined.slice(0, 16);
+                const iv = combined.slice(16, 28);
+                const ciphertext = combined.slice(28);
+
+                const encoder = new TextEncoder();
+
+                const keyMaterial = await crypto.subtle.importKey(
+                    "raw",
+                    encoder.encode(password),
+                    { name: "PBKDF2" },
+                    false,
+                    ["deriveKey"],
+                );
+
+                const key = await crypto.subtle.deriveKey(
+                    {
+                        name: "PBKDF2",
+                        salt,
+                        iterations: 300000,
+                        hash: "SHA-256",
+                    },
+                    keyMaterial,
+                    { name: "AES-GCM", length: 256 },
+                    false,
+                    ["decrypt"],
+                );
+
+                const decrypted = await crypto.subtle.decrypt(
+                    { name: "AES-GCM", iv },
+                    key,
+                    ciphertext,
+                );
+
+                return new TextDecoder().decode(decrypted);
+            }
+        </script>
+    
+
+</body></html>
