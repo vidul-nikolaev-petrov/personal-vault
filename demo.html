@@ -1,10 +1,6 @@
+
 <!-- saved from url=(0050)file:///Users/vidul/code/personal-vault/index.html -->
-<html>
-    <head>
-        <meta
-            http-equiv="Content-Type"
-            content="text/html; charset=windows-1252"
-        />
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
         <title>PVault</title>
         <style>
             body {
@@ -95,23 +91,12 @@
         </p>
 
         <div id="body">
-            <textarea
-                id="inputText"
-                placeholder="Enter text to encrypt / decrypt (leave empty for decryption)"
-            ></textarea>
-            <input
-                type="text"
-                id="inputPassword"
-                placeholder="Demo password: 1234"
-            />
+            <textarea id="inputText" placeholder="Enter text to encrypt / decrypt (leave empty for decryption)"></textarea>
+            <input type="text" id="inputPassword" placeholder="Demo password: 1234">
             <button id="encryptButton">Encrypt</button>
             <button id="decryptButton">Decrypt</button>
-            <div id="output" style="display: block">
-                <div id="data">
-                    OeDmq7Nb03ffE1xClPKRlFvvgWQH8C3MF2/efvMrHfF6XlWugxcHQxp1uId4YLtWHAXmjp00Pw030rsFm6dZcVf9Mpo6zVCWrM6R+Q8u6VSbEzus7qYSKsYQ4x5MqnT9auTmhyVGhAIHD6JIjEsaDT05GUyEoe40FXFTWBXyKykIBLG0pHkGwd3cjfA5UwaUn7h9/qhrgI5b+AUcbs78gXMKO+BjJoHrntlUg2vS9QMcxBFCqOjJNxf5s8NzIyiulAssoxIqb4sUV/yFXzILYfUP8syHGjLv2GjBJ7kdsrx5v7hCzg==
-                </div>
-            </div>
-            <br />
+            <div id="output" style="display: block;"><div id="data">oWQ2gRNYu/3I9lzl9HXFpXtUxv6kyOKXFYX7KXInR4Np+nsUFDczoJa3nA7bVRDsC0axCalpAMs8XYSpmNcSQDPVtNAHOUsLCCH/q6YgMlKR7aSmkHy9BQFUeS7tPngLdJBuS25k5JCvwM0mCffNhuy2xPCCGfd8ZL1v/v1/REsyqEzLX+glMvF3AMY+Ndnml+HlyPJUEMiCRcpAEiu/2QUYqJMhoZ9k1rGqTFIHq5pShiaxwkE/D+OPbb4zFKaF7afpU7fsdnV0dgduHdt+Bz5szxqogETagbHz/4N3/QDBv6ek2Q==</div></div>
+            <br>
             <div id="error"></div>
         </div>
 
@@ -250,7 +235,7 @@
                     {
                         name: "PBKDF2",
                         salt,
-                        iterations: 600000,
+                        iterations: 300000,
                         hash: "SHA-256",
                     },
                     keyMaterial,
@@ -305,7 +290,7 @@
                     {
                         name: "PBKDF2",
                         salt,
-                        iterations: 600000,
+                        iterations: 300000,
                         hash: "SHA-256",
                     },
                     keyMaterial,
@@ -323,5 +308,6 @@
                 return new TextDecoder().decode(decrypted);
             }
         </script>
-    </body>
-</html>
+    
+
+</body></html>
