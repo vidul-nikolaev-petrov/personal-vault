@@ -61,11 +61,11 @@
             }
             #data {
                 display: inline-block;
-                text-align: justify;
-                word-wrap: break-word;
-                white-space: pre-wrap;
                 width: 555px;
-                margin-left: 10px;
+                padding-left: 15px;
+                white-space: pre-wrap;
+                font-family: monospace;
+                overflow-wrap: break-word;
             }
             #error {
                 margin-top: 10px;
@@ -158,20 +158,22 @@
             });
 
             encryptButton.addEventListener("click", async () => {
-                const text = inputText.value;
+                const text = inputText.value || output.textContent;
                 const pass = password.value;
 
-                if (!text || !pass) {
+                console.log("Encrypting with text:", text);
+
+                if (!(text && pass)) {
                     displayError("Please enter both text and password.");
                     return;
                 }
 
                 try {
-                    inputText.value = "";
-                    password.value = "";
                     error.style.display = "none";
                     output.textContent = await encryptToBase64(text, pass);
                     output.parentElement.style.display = "block";
+                    inputText.value = "";
+                    password.value = "";
                 } catch (error) {
                     console.error("Encryption error:", error);
                     displayError(
