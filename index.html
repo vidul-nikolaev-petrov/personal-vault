@@ -161,8 +161,6 @@
                 const text = inputText.value || output.textContent;
                 const pass = password.value;
 
-                console.log("Encrypting with text:", text);
-
                 if (!(text && pass)) {
                     displayError("Please enter both text and password.");
                     return;
