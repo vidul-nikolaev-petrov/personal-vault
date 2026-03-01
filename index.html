@@ -115,7 +115,9 @@
             const password = document.getElementById("inputPassword");
             const output = document.getElementById("data");
             const error = document.getElementById("error");
-            let timeOut1, timeOut2;
+            let timeOut1 = null,
+                timeOut2 = null,
+                errorVersion = 0;
             const helpMessage = `
         AES-256-GCM encryption using Web Crypto API.
             
@@ -211,20 +213,29 @@
             });
 
             function displayError(message) {
+                errorVersion++;
+                const currentVersion = errorVersion;
+
                 output.parentElement.style.display = "none";
                 error.textContent = message;
                 error.style.display = "flex";
-                
-                clearTimeout(timeOut1);
-                clearTimeout(timeOut2);
-                
+                error.style.opacity = "1";
+
+                if (timeOut1) clearTimeout(timeOut1);
+                if (timeOut2) clearTimeout(timeOut2);
+
                 timeOut1 = setTimeout(() => {
+                    if (currentVersion !== errorVersion) return;
+
                     error.style.opacity = "0";
-                    
+
                     timeOut2 = setTimeout(() => {
+                        if (currentVersion !== errorVersion) return;
+
                         error.textContent = "";
                         error.style.opacity = "1";
-                        output.parentElement.style.display = "block";
+                        if (output.textContent)
+                            output.parentElement.style.display = "block";
                     }, 500);
                 }, 3000);
             }

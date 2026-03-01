@@ -94,9 +94,9 @@
             <input type="text" id="inputPassword" placeholder="Demo password: 1234">
             <button id="encryptButton">Encrypt</button>
             <button id="decryptButton">Decrypt</button>
-            <div id="output" style="display: block;"><div id="data">rEbzecFfVqXmoIXOWSDreywViAt5C7noSpsGQhYMjlFJ/mvJL/PvE8gC5xszSATmJE8jqQDHkDuZloeOWTHDprtZEWsv4g+ohH6OFL6hgtun5kskyOb2Aj190vZl+WU1AJe1BIXjGV7vMgcNjXjxpnuDcJ3yKFd6agL/eVdFWgX6UsLGemUh+rKuSUfMQP/TE3liIOiKpTunGr+mrukLPgd5YuuqqHgL49dmfLvJhPTu8kN1BEyOF9Vk19/EyGKUr/TDoDpr/+KtnZYHNgpEdjwzCdjgNY9vHET+l4f6HS0+4UBqIw==</div></div>
+            <div id="output" style="display: block;"><div id="data">9bVsUnQNVxMbf/8sR71Sv+m3SieTAonR2aTYPH32u2+sVkLc53zIYqegZFBSgU9R86GSys9JsQnbCkl5PJg790Z7fysuVorOWjT0+PXbXGmu94ZrrQ71V46Slcbe/FLNK4b0fRKeb0hXpj2GxknT0P9clXxGqE46z1SqajLMRmTatz1OUgmLlp6rDO1HGY4/gBmdFfVCMGkoGCfObUFqhdkzfTZ4r3H7agLXmrIX2fIxzP+7k6xwQBktd2oqhCv6+3tNlylzJJ299kEfD/P1upIu21xtZ532IRaRgdCk9wveuXCzVvCVbrfrlYoD58Nyh46Q9eDiGfqqjc8dZYSCOmns9UdovrjPMB1J/yM9k/WKAC7sbSRmR6D/XhwPl5fY77/NYlRPqsEckumFrTTcTtNSF8uFVPmYYzMsCsYpen1WO+51sGKEEBf0OuqkilAa7t01+R+1lYzPBb8sf4+/CVHVfnmQKwp65RdcnLEcZzelNDOtKx/hZqDyDn4jdvrIrtRXi+4Ok7DRPHwLMqaJiMPV+uzxM6xtb8SpIGl8lW7ICfgySlcSLJuldHRdMvmMw93c1XIB3KBmGskRQpVjKRXT3+urm4IroWtPWgIPLHWMaY8YCFnqswVszIH/qM+F7mDquyO1hejse9wOf2ohIM4M0hOPf+fmWShc71g5AbnNtfgBC5jJyZWMig7ZiOJoQuGmWNFpepgkb+q+Ya1mlBV99mDHM1HVTxopPcz06Dsb0kKkvcI9OQCveblwuU6Oi2oEPNsG6/l4Lb/W7tUJbl0Abr9RtNVY2RMM6NgiLix7PMmKf94lB8EmVnwV2fzJ2AGsqUIayxU3QgBDz3cY+7l5+KceH804x4G5V6cvzRati9Vo755Tmchp744s+4ssqL1u/OiR50ACDEW30We9iNJ0jbjKEaE1iSk4nAu0CYaKaYpOqXwZhZS1bv3XNzHL61oRQ8eL2PAz7+pPb+NfjusQA6bCmmHu4nhCJipmpUshCiOGV4XdRfyxpzjHYryGuygdleALDPOT8bNyM/iQ4m30ov7zUD7wA01oQbkCHC9gWeM11RkyjMo4G8HUMmtTQ2EnhRDYsDTYPn+Ov7Tem1b3mejoJubmZslWYEWRG0BcogmustpKxJSTc16g2u9c/yzARqYBaBi+FLoAhPe2jWJPGjnM92bfMSyZMpbeZ7sQTt0VgWSbCMkRgsE4v22jv9Ks2PMNJEPPV7Z4y7Ddwpot9o8zLIq3Jjq0WfgHgNISmh6sRtlqsH25c1Wo/QUiJ8GLPQ/fIlIutOck4rp7rfZFC2f8d/dkLA==</div></div>
             <br>
-            <div id="error" style="display: none; opacity: 1;"></div>
+            <div id="error" style="display: none;"></div>
         </div>
 
         <script>
@@ -107,7 +107,9 @@
             const password = document.getElementById("inputPassword");
             const output = document.getElementById("data");
             const error = document.getElementById("error");
-            let timeOut1, timeOut2;
+            let timeOut1 = null,
+                timeOut2 = null,
+                errorVersion = 0;
             const helpMessage = `
         AES-256-GCM encryption using Web Crypto API.
             
@@ -203,20 +205,29 @@
             });
 
             function displayError(message) {
+                errorVersion++;
+                const currentVersion = errorVersion;
+
                 output.parentElement.style.display = "none";
                 error.textContent = message;
                 error.style.display = "flex";
-                
-                clearTimeout(timeOut1);
-                clearTimeout(timeOut2);
-                
+                error.style.opacity = "1";
+
+                if (timeOut1) clearTimeout(timeOut1);
+                if (timeOut2) clearTimeout(timeOut2);
+
                 timeOut1 = setTimeout(() => {
+                    if (currentVersion !== errorVersion) return;
+
                     error.style.opacity = "0";
-                    
+
                     timeOut2 = setTimeout(() => {
+                        if (currentVersion !== errorVersion) return;
+
                         error.textContent = "";
                         error.style.opacity = "1";
-                        output.parentElement.style.display = "block";
+                        if (output.textContent)
+                            output.parentElement.style.display = "block";
                     }, 500);
                 }, 3000);
             }
