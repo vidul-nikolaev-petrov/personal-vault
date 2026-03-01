@@ -167,6 +167,7 @@
                 try {
                     inputText.value = "";
                     password.value = "";
+                    error.style.display = "none";
                     output.textContent = await encryptToBase64(text, pass);
                     output.parentElement.style.display = "block";
                 } catch (error) {
@@ -200,6 +201,7 @@
                         pass,
                     );
                     password.value = "";
+                    error.style.display = "none";
                     output.textContent = decryptedText;
                     output.parentElement.style.display = "block";
                 } catch (error) {
@@ -209,19 +211,22 @@
             });
 
             function displayError(message) {
+                output.parentElement.style.display = "none";
                 error.textContent = message;
-
+                error.style.display = "flex";
+                
                 clearTimeout(timeOut1);
                 clearTimeout(timeOut2);
-
+                
                 timeOut1 = setTimeout(() => {
                     error.style.opacity = "0";
-
+                    
                     timeOut2 = setTimeout(() => {
                         error.textContent = "";
                         error.style.opacity = "1";
+                        output.parentElement.style.display = "block";
                     }, 500);
-                }, 5000);
+                }, 3000);
             }
 
             async function encryptToBase64(text, password) {

@@ -1,6 +1,6 @@
 
-<!-- saved from url=(0050)file:///Users/vidul/code/personal-vault/index.html -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        
         <title>PVault</title>
         <style>
             body {
@@ -11,7 +11,6 @@
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                /* height: 90vh; */
             }
             #title {
                 font-size: 24px;
@@ -88,7 +87,7 @@
     </head>
     <body>
         <p id="title">
-            Personal Vault (AES-256-GCM) Demo<span id="help">&#9432;</span>
+            Personal Vault (AES-256-GCM) Demo<span id="help">ⓘ</span>
         </p>
 
         <div id="body">
@@ -96,9 +95,9 @@
             <input type="text" id="inputPassword" placeholder="Demo password: 1234">
             <button id="encryptButton">Encrypt</button>
             <button id="decryptButton">Decrypt</button>
-            <div id="output" style="display: block;"><div id="data">lIxvyfoF/39Z/3ZVVIhqqACV5rN3CL5yF3ZgJ8oT7OVzEr0xw/UAfvF7qh/Yfn2C1NpVlY/42nK1Xg9nEAc/YyxS/YQdLTsR4gT6N+MZasCYodsnC9NLjX1sOXS1tJ85E4mTyLEdazVia/uVA5HAXHzq3loHcQLMoUblNCwit+HYoiF+D+BoLfM/Go077yw9q5zcDwLbmxabDOLYymCjvwiBITtDqVq4aN1Ru9lpP7RXNFvd297Z7giKtuKfJ9MYzidxxQflMYi5SCe6X6oh/KYSOlvlt1/dbtgh8niKv5JqMwnpeQ==</div></div>
+            <div id="output" style="display: block;"><div id="data">DQPAbFw7uvS30KXjx3yLj7cjmYsS/phiscXfbkta49BOet8BUaxM5VQNOLoQN/LhdWqwJZPzHEbFSuyF88phNH7rSMvrasqWR+YcrjvpSeIlEZ7THPPJ2oIuAff4iAkLF38f3SW8u+gbH6DVli1eS4Htywa9bqxfv9+GayAG0UkiypZeqebhAwRLveCG3MItDlFW4aqUPOSqNvkFZyvE76PM8bqFBX49Xanh8t+T53r9cWwMTvM/jHEI3NL4N0NN+Hn+BHCJAF/xHL1C5JP8UEtCMwSXfAJA+C4dniCa3vSQkVc11Q==</div></div>
             <br>
-            <div id="error"></div>
+            <div id="error" style="display: none; opacity: 1;"></div>
         </div>
 
         <script>
@@ -161,6 +160,7 @@
                 try {
                     inputText.value = "";
                     password.value = "";
+                    error.style.display = "none";
                     output.textContent = await encryptToBase64(text, pass);
                     output.parentElement.style.display = "block";
                 } catch (error) {
@@ -194,6 +194,7 @@
                         pass,
                     );
                     password.value = "";
+                    error.style.display = "none";
                     output.textContent = decryptedText;
                     output.parentElement.style.display = "block";
                 } catch (error) {
@@ -203,19 +204,22 @@
             });
 
             function displayError(message) {
+                output.parentElement.style.display = "none";
                 error.textContent = message;
-
+                error.style.display = "flex";
+                
                 clearTimeout(timeOut1);
                 clearTimeout(timeOut2);
-
+                
                 timeOut1 = setTimeout(() => {
                     error.style.opacity = "0";
-
+                    
                     timeOut2 = setTimeout(() => {
                         error.textContent = "";
                         error.style.opacity = "1";
+                        output.parentElement.style.display = "block";
                     }, 500);
-                }, 5000);
+                }, 3000);
             }
 
             async function encryptToBase64(text, password) {
