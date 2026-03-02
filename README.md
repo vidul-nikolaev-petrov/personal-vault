@@ -18,4 +18,4 @@ The webpage works equally well online and offline.
 3. Click the **Decrypt** button.
 4. That's it.
 
-To preserve the SHA-256 hash integrity, download the raw content from [here](https://raw.githubusercontent.com/vidul-nikolaev-petrov/personal-vault/refs/heads/main/index.html).
+To ensure the SHA-256 checksum matches, download the raw content from [here](https://raw.githubusercontent.com/vidul-nikolaev-petrov/personal-vault/refs/heads/main/index.html).
