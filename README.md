@@ -4,6 +4,8 @@ Try it [online](https://vidul-nikolaev-petrov.github.io/personal-vault/) or chec
 
 > Vanilla JavaScript — no dependencies required.
 
+The webpage works equally well online and offline.
+
 ## Encryption Steps
 1. Enter the text to encrypt.
 2. Enter a password.
