@@ -120,22 +120,22 @@
                 errorVersion = 0;
             const helpMessage = `
         AES-256-GCM encryption using Web Crypto API.
-            
+
         Encryption steps:
             1. Enter text and password.
             2. Click Encrypt to get the ciphertext.
         Decryption steps:
             1. Enter password.
             3. Click Decrypt to retrieve the original text.
-                
+
         Salt + IV + Ciphertext are combined and Base64 encoded.
-        
+
         IV stands for Initialization Vector. It is a random value used
         in cryptographic algorithms to ensure that the same plaintext
-        encrypted multiple times produces different ciphertexts. 
+        encrypted multiple times produces different ciphertexts.
         The IV is combined with the salt and ciphertext, then Base64
         encoded for storage or transmission.
-        `;
+            `;
 
             window.addEventListener("load", () => {
                 inputText.focus();
@@ -152,6 +152,7 @@
             output.addEventListener("click", () => {
                 const range = document.createRange();
                 const selection = window.getSelection();
+
                 range.selectNodeContents(output);
                 selection.removeAllRanges();
                 selection.addRange(range);
@@ -161,8 +162,13 @@
                 const text = inputText.value || output.textContent;
                 const pass = password.value;
 
-                if (!(text && pass)) {
-                    displayError("Please enter both text and password.");
+                if (!text) {
+                    displayError("Please enter text.");
+                    return;
+                }
+
+                if (!pass) {
+                    displayError("Please enter password.");
                     return;
                 }
 
@@ -193,7 +199,7 @@
                     return;
                 }
                 if (!pass) {
-                    displayError("Please enter a password.");
+                    displayError("Please enter password.");
                     return;
                 }
 
@@ -214,6 +220,7 @@
 
             function displayError(message) {
                 errorVersion++;
+
                 const currentVersion = errorVersion;
 
                 output.parentElement.style.display = "none";
@@ -242,7 +249,6 @@
 
             async function encryptToBase64(text, password) {
                 const encoder = new TextEncoder();
-
                 const salt = crypto.getRandomValues(new Uint8Array(16));
                 const iv = crypto.getRandomValues(new Uint8Array(12));
 
@@ -258,48 +264,48 @@
                     {
                         name: "PBKDF2",
                         salt,
-                        iterations: 600000,
+                        iterations: 1_000_000,
                         hash: "SHA-256",
                     },
                     keyMaterial,
                     { name: "AES-GCM", length: 256 },
                     false,
-                    ["encrypt", "decrypt"],
+                    ["encrypt"],
                 );
 
-                const ciphertext = new Uint8Array(
-                    await crypto.subtle.encrypt(
-                        { name: "AES-GCM", iv },
-                        key,
-                        encoder.encode(text),
-                    ),
+                const ciphertext = await crypto.subtle.encrypt(
+                    { name: "AES-GCM", iv },
+                    key,
+                    encoder.encode(text),
                 );
 
                 const combined = new Uint8Array(
-                    salt.length + iv.length + ciphertext.length,
+                    salt.length + iv.length + ciphertext.byteLength,
                 );
 
                 combined.set(salt, 0);
-                combined.set(iv, salt.length);
-                combined.set(ciphertext, salt.length + iv.length);
+                combined.set(iv, 16);
+                combined.set(new Uint8Array(ciphertext), 28);
 
                 return btoa(
-                    Array.from(combined)
-                        .map((b) => String.fromCharCode(b))
-                        .join(""),
+                    Array.from(combined, (b) => String.fromCharCode(b)).join(
+                        "",
+                    ),
                 );
             }
 
             async function decryptFromBase64(base64, password) {
-                const combined = Uint8Array.from(atob(base64), (c) =>
+                const encoder = new TextEncoder();
+                const binaryString = atob(base64);
+                const combined = Uint8Array.from(binaryString, (c) =>
                     c.charCodeAt(0),
                 );
+
+                if (combined.length < 28) throw new Error("Invalid ciphertext");
 
                 const salt = combined.slice(0, 16);
                 const iv = combined.slice(16, 28);
                 const ciphertext = combined.slice(28);
-
-                const encoder = new TextEncoder();
 
                 const keyMaterial = await crypto.subtle.importKey(
                     "raw",
@@ -313,13 +319,13 @@
                     {
                         name: "PBKDF2",
                         salt,
-                        iterations: 600000,
+                        iterations: 1_000_000,
                         hash: "SHA-256",
                     },
                     keyMaterial,
                     { name: "AES-GCM", length: 256 },
                     false,
-                    ["encrypt", "decrypt"],
+                    ["decrypt"],
                 );
 
                 const decrypted = await crypto.subtle.decrypt(
